@@ -89,9 +89,9 @@ export const Home = () => {
                 className="form-control"
                 rows="6"
                 defaultValue={`Pollo
-				Arroz
-				Cebolla
-				Ajo`}
+                Arroz
+                Cebolla
+                Ajo`}
               />
 
               <button className="btn btn-success w-100 mt-3">

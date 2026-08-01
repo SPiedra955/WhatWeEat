@@ -1,44 +1,42 @@
 const services = {};
 const url = import.meta.env.VITE_BACKEND_URL;
 
-services.auth = async (formData) => {
+const request = async (endpoint, data) => {
   try {
-    const resp = await fetch(url + "/api/auth", {
+    const resp = await fetch(url + endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(data),
     });
 
-    const text = await resp.text();
-    // console.log(text)
-
-    let data;
-
-    try {
-      data = JSON.parse(text);
-    } catch {
-      throw new Error("Respuesta del backend no es JSON");
-    }
+    const result = await resp.json();
 
     if (!resp.ok) {
-      const error = new Error(data.data || "error auth");
+      const error = new Error(result.data || "Error");
       error.status = resp.status;
       throw error;
     }
 
-    if (data.token) localStorage.setItem("token", data.token);
-
-    return data;
+    return result;
   } catch (error) {
-    console.log("ERROR:", error);
+    console.error("ERROR:", error);
     throw error;
   }
 };
 
+services.register = async (formData) => {
+  return await request("/api/register", formData);
+};
+
+services.login = async (formData) => {
+  return await request("/api/login", formData);
+};
+
 services.logout = () => {
   localStorage.removeItem("token");
+  localStorage.removeItem("user");
 };
 
 export default services;

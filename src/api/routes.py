@@ -26,8 +26,121 @@ def handle_hello():
     return jsonify(response_body), 200
 
 
-@api.route("/auth", methods=["POST"])
-def auth():
+# @api.route("/auth", methods=["POST"])
+# def auth():
+#     try:
+#         body = request.get_json()
+
+#         if not body or not body.get("email") or not body.get("password"):
+#             return jsonify({"success": False, "data": "missing info"}), 400
+
+#         user = db.session.execute(
+#             select(User).where(User.email == body.get("email"))
+#         ).scalar_one_or_none()
+
+#         if body.get("type") == "register":
+#             if user:
+#                 return jsonify({"success": False, "data": "email taken"}), 403
+
+#             hashed = generate_password_hash(body["password"])
+#             new_user = User(
+#                 email=body["email"],
+#                 password=hashed,
+#                 name=body["name"],
+#                 age=body["age"],
+#                 weight=body["weight"],
+#                 objective=DietGoal(body["objective"]),
+#             )
+#             db.session.add(new_user)
+#             db.session.commit()
+#             # print("Usuario guardado")
+
+#             token = create_access_token(identity=str(new_user.id))
+#             # print("Token creado")
+
+#             return (
+#                 jsonify(
+#                     {"success": True, "data": new_user.serialize(), "token": token}
+#                 ),
+#                 201,
+#             )
+
+#         if body.get("type") == "login":
+#             if not user:
+#                 return jsonify({"success": False, "data": "email not found"}), 404
+
+#             if not check_password_hash(user.password, body["password"]):
+#                 return (
+#                     jsonify(
+#                         {"success": False, "data": "incorrect email or password"}),
+#                     401,
+#                 )
+
+#             token = create_access_token(identity=str(user.id))
+
+#             return (
+#                 jsonify(
+#                     {"success": True, "data": user.serialize(), "token": token}),
+#                 200,
+#             )
+
+#         return jsonify({"success": False, "data": "invalid type"}), 400
+#     except Exception as e:
+#         print("ERROR BACKEND:", e)
+#         return jsonify({"success": False, "data": "internal server error"}), 500
+
+
+@api.route("/register", methods=["POST"])
+def register():
+    try:
+        body = request.get_json()
+
+        if (
+            not body
+            or not body.get("email")
+            or not body.get("password")
+            or not body.get("name")
+            or not body.get("age")
+            or not body.get("weight")
+            or not body.get("objective")
+        ):
+            return jsonify({"success": False, "data": "missing info"}), 400
+
+        user = db.session.execute(
+            select(User).where(User.email == body["email"])
+        ).scalar_one_or_none()
+
+        if user:
+            return jsonify({"success": False, "data": "email taken"}), 409
+
+        hashed_password = generate_password_hash(body["password"])
+
+        new_user = User(
+            email=body["email"],
+            password=hashed_password,
+            name=body["name"],
+            age=int(body["age"]),
+            weight=float(body["weight"]),
+            objective=DietGoal(body["objective"]),
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        token = create_access_token(identity=str(new_user.id))
+
+        return (
+            jsonify({"success": True, "data": new_user.serialize(), "token": token}),
+            201,
+        )
+
+    except Exception as e:
+        print("REGISTER ERROR:", e)
+        return jsonify({"success": False, "data": "internal server error"}), 500
+
+
+@api.route("/login", methods=["POST"])
+def login():
     try:
         body = request.get_json()
 
@@ -35,56 +148,22 @@ def auth():
             return jsonify({"success": False, "data": "missing info"}), 400
 
         user = db.session.execute(
-            select(User).where(User.email == body.get("email"))
+            select(User).where(User.email == body["email"])
         ).scalar_one_or_none()
 
-        if body.get("type") == "register":
-            if user:
-                return jsonify({"success": False, "data": "email taken"}), 403
+        if not user:
+            return jsonify({"success": False, "data": "email not found"}), 404
 
-            hashed = generate_password_hash(body["password"])
-            new_user = User(
-                email=body["email"],
-                password=hashed,
-                name=body["name"],
-                age=body["age"],
-                weight=body["weight"],
-                objective=DietGoal(body["objective"]),
-            )
-            db.session.add(new_user)
-            db.session.commit()
-            # print("Usuario guardado")
-
-            token = create_access_token(identity=str(new_user.id))
-            # print("Token creado")
-
+        if not check_password_hash(user.password, body["password"]):
             return (
-                jsonify(
-                    {"success": True, "data": new_user.serialize(), "token": token}
-                ),
-                201,
+                jsonify({"success": False, "data": "incorrect email or password"}),
+                401,
             )
 
-        if body.get("type") == "login":
-            if not user:
-                return jsonify({"success": False, "data": "email not found"}), 404
+        token = create_access_token(identity=str(user.id))
 
-            if not check_password_hash(user.password, body["password"]):
-                return (
-                    jsonify(
-                        {"success": False, "data": "incorrect email or password"}),
-                    401,
-                )
+        return jsonify({"success": True, "data": user.serialize(), "token": token}), 200
 
-            token = create_access_token(identity=str(user.id))
-
-            return (
-                jsonify(
-                    {"success": True, "data": user.serialize(), "token": token}),
-                200,
-            )
-
-        return jsonify({"success": False, "data": "invalid type"}), 400
     except Exception as e:
-        print("ERROR BACKEND:", e)
+        print("LOGIN ERROR:", e)
         return jsonify({"success": False, "data": "internal server error"}), 500
