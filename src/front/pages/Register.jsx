@@ -66,7 +66,7 @@ const Register = () => {
 
   return (
     <div className="min-vh-100 bg-light pt-5 pb-5 px-3">
-      <div className="container">
+      <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
             <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
