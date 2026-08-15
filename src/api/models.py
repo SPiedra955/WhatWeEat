@@ -1,61 +1,103 @@
 from datetime import datetime
-from decimal import Decimal
-from flask_sqlalchemy import SQLAlchemy  # type: ignore
-from sqlalchemy import String, Boolean, ForeignKey, DateTime, Numeric, Text, Enum, Float, Integer  # type: ignore
-from sqlalchemy.orm import Mapped, mapped_column, relationship  # type: ignore
-import enum
-from sqlalchemy.types import JSON # type: ignore
+from enum import Enum
+
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import (
+    String,
+    Boolean,
+    ForeignKey,
+    DateTime,
+    Numeric,
+    Text,
+    Enum as SQLEnum,
+    Integer,
+    UniqueConstraint,
+)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.types import JSON
+
 
 db = SQLAlchemy()
 
 
-class DietGoal(enum.Enum):
-    LOSE_WEIGHT = "lose_weight"                  # Perder peso
-    MAINTAIN_WEIGHT = "maintain_weight"          # Mantener peso
-    GAIN_MUSCLE = "gain_muscle"                  # Ganar masa muscular
-    BODY_RECOMPOSITION = "body_recomposition"   # Perder grasa y ganar músculo
-    SPORTS_PERFORMANCE = "sports_performance"   # Mejorar rendimiento deportivo
-    COMPETITION_PREP = "competition_prep"       # Preparación para competición
-    HEALTHY_EATING = "healthy_eating"           # Alimentación saludable
+# ============================================================
+# ENUMS
+# ============================================================
 
+class MealType(Enum):
+    BREAKFAST = "breakfast"
+    LUNCH = "lunch"
+    DINNER = "dinner"
+    SNACK = "snack"
+
+
+# ============================================================
+# USER
+# ============================================================
 
 class User(db.Model):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    name: Mapped[str] = mapped_column(String(50), nullable=False)
+    name: Mapped[str] = mapped_column(
+        String(50),
+        nullable=False
+    )
 
     email: Mapped[str] = mapped_column(
-        String(120), unique=True, nullable=False)
+        String(120),
+        unique=True,
+        nullable=False
+    )
 
-    password: Mapped[str] = mapped_column(String(255), nullable=False)
+    password: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False
+    )
 
-    age: Mapped[int] = mapped_column(nullable=True)
+    age: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True
+    )
 
-    weight: Mapped[float] = mapped_column(nullable=True)
+    weight: Mapped[float | None] = mapped_column(
+        Numeric(5, 2),
+        nullable=True
+    )
 
-    objective: Mapped[DietGoal] = mapped_column(Enum(DietGoal), nullable=True)
-
-    photo: Mapped[str] = mapped_column(String(255), nullable=True)
+    photo: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True
+    )
 
     is_active: Mapped[bool] = mapped_column(
-        Boolean, default=False, nullable=False)
+        Boolean,
+        default=False,
+        nullable=False
+    )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, nullable=False
-    )
-    
-    recipes: Mapped[list["Recipe"]] = relationship(
-    back_populates="user", cascade="all, delete-orphan"
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False
     )
 
-    diets: Mapped[list["Diet"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+    # Relaciones
+
+    recipes: Mapped[list["Recipe"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
     )
 
     favorites: Mapped[list["Favorite"]] = relationship(
-        back_populates="user", cascade="all, delete-orphan"
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+
+    diets: Mapped[list["Diet"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
     )
 
     def serialize(self):
@@ -64,13 +106,16 @@ class User(db.Model):
             "name": self.name,
             "email": self.email,
             "age": self.age,
-            "weight": self.weight,
-            "objective": self.objective.value if self.objective else None,
+            "weight": float(self.weight) if self.weight is not None else None,
             "photo": self.photo,
             "is_active": self.is_active,
             "created_at": self.created_at.isoformat(),
         }
 
+
+# ============================================================
+# RECIPE
+# ============================================================
 
 class Recipe(db.Model):
     __tablename__ = "recipes"
@@ -78,46 +123,94 @@ class Recipe(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"), nullable=False
+        ForeignKey("users.id"),
+        nullable=False
     )
 
-    title: Mapped[str] = mapped_column(String(150), nullable=False)
+    title: Mapped[str] = mapped_column(
+        String(150),
+        nullable=False
+    )
 
-    description: Mapped[str] = mapped_column(Text, nullable=True)
+    description: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True
+    )
 
-    ingredients: Mapped[list[dict]] = mapped_column(JSON, nullable=False)
+    ingredients: Mapped[list[dict]] = mapped_column(
+        JSON,
+        nullable=False
+    )
 
-    instructions: Mapped[str] = mapped_column(Text, nullable=False)
+    instructions: Mapped[str] = mapped_column(
+        Text,
+        nullable=False
+    )
 
-    improved_instructions: Mapped[str] = mapped_column(Text, nullable=True)
+    servings: Mapped[int] = mapped_column(
+        Integer,
+        default=1,
+        nullable=False
+    )
 
-    calories: Mapped[float] = mapped_column(Float, nullable=True)
+    prep_time: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True
+    )
 
-    protein: Mapped[float] = mapped_column(Float, nullable=True)
+    # Información nutricional
+    calories: Mapped[float | None] = mapped_column(
+        Numeric(8, 2),
+        nullable=True
+    )
 
-    carbs: Mapped[float] = mapped_column(Float, nullable=True)
+    protein: Mapped[float | None] = mapped_column(
+        Numeric(8, 2),
+        nullable=True
+    )
 
-    fat: Mapped[float] = mapped_column(Float, nullable=True)
+    carbs: Mapped[float | None] = mapped_column(
+        Numeric(8, 2),
+        nullable=True
+    )
 
-    servings: Mapped[int] = mapped_column(Integer, default=1)
+    fat: Mapped[float | None] = mapped_column(
+        Numeric(8, 2),
+        nullable=True
+    )
 
-    prep_time: Mapped[int] = mapped_column(Integer, nullable=True)
+    image: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True
+    )
 
-    ai_prompt: Mapped[str] = mapped_column(Text, nullable=True)
-
-    image: Mapped[str] = mapped_column(String(255), nullable=True)
+    ai_prompt: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True
+    )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False
     )
 
-    user: Mapped["User"] = relationship(back_populates="recipes")
+    # Relaciones
+
+    user: Mapped["User"] = relationship(
+        back_populates="recipes"
+    )
 
     favorites: Mapped[list["Favorite"]] = relationship(
         back_populates="recipe",
         cascade="all, delete-orphan"
     )
-    
+
+    diet_recipes: Mapped[list["DietRecipe"]] = relationship(
+        back_populates="recipe",
+        cascade="all, delete-orphan"
+    )
+
     def serialize(self):
         return {
             "id": self.id,
@@ -126,18 +219,70 @@ class Recipe(db.Model):
             "description": self.description,
             "ingredients": self.ingredients,
             "instructions": self.instructions,
-            "improved_instructions": self.improved_instructions,
-            "calories": self.calories,
-            "protein": self.protein,
-            "carbs": self.carbs,
-            "fat": self.fat,
             "servings": self.servings,
             "prep_time": self.prep_time,
-            "ai_prompt": self.ai_prompt,
+            "calories": float(self.calories) if self.calories is not None else None,
+            "protein": float(self.protein) if self.protein is not None else None,
+            "carbs": float(self.carbs) if self.carbs is not None else None,
+            "fat": float(self.fat) if self.fat is not None else None,
             "image": self.image,
             "created_at": self.created_at.isoformat(),
         }
-        
+
+
+# ============================================================
+# FAVORITE
+# ============================================================
+
+class Favorite(db.Model):
+    __tablename__ = "favorites"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"),
+        nullable=False
+    )
+
+    recipe_id: Mapped[int] = mapped_column(
+        ForeignKey("recipes.id"),
+        nullable=False
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False
+    )
+
+    user: Mapped["User"] = relationship(
+        back_populates="favorites"
+    )
+
+    recipe: Mapped["Recipe"] = relationship(
+        back_populates="favorites"
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "recipe_id",
+            name="uq_user_recipe_favorite"
+        ),
+    )
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "recipe_id": self.recipe_id,
+            "created_at": self.created_at.isoformat(),
+        }
+
+
+# ============================================================
+# DIET
+# ============================================================
 
 class Diet(db.Model):
     __tablename__ = "diets"
@@ -145,59 +290,89 @@ class Diet(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"), nullable=False
+        ForeignKey("users.id"),
+        nullable=False
     )
 
-    title: Mapped[str] = mapped_column(String(100), nullable=False)
+    title: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False
+    )
 
-    description: Mapped[str] = mapped_column(Text, nullable=True)
-
-    recipes: Mapped[dict] = mapped_column(JSON, nullable=False)
+    description: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True
+    )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False
     )
 
-    user: Mapped["User"] = relationship(back_populates="diets")
+    user: Mapped["User"] = relationship(
+        back_populates="diets"
+    )
+
+    diet_recipes: Mapped[list["DietRecipe"]] = relationship(
+        back_populates="diet",
+        cascade="all, delete-orphan"
+    )
 
     def serialize(self):
-            return {
-                "id": self.id,
-                "user_id": self.user_id,
-                "title": self.title,
-                "description": self.description,
-                "recipes": self.recipes,
-                "created_at": self.created_at.isoformat(),
-            }
-        
-        
-class Favorite(db.Model):
-    __tablename__ = "favorites"
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "title": self.title,
+            "description": self.description,
+            "created_at": self.created_at.isoformat(),
+        }
+
+
+# ============================================================
+# DIET RECIPE
+# ============================================================
+
+class DietRecipe(db.Model):
+    __tablename__ = "diet_recipes"
 
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"), nullable=False
+    diet_id: Mapped[int] = mapped_column(
+        ForeignKey("diets.id"),
+        nullable=False
     )
 
     recipe_id: Mapped[int] = mapped_column(
-        ForeignKey("recipes.id"), nullable=False
+        ForeignKey("recipes.id"),
+        nullable=False
     )
 
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow
+    # Para poder organizar una dieta semanal
+    day: Mapped[int | None] = mapped_column(
+        Integer,
+        nullable=True
     )
 
-    user: Mapped["User"] = relationship(back_populates="favorites")
+    meal_type: Mapped[MealType | None] = mapped_column(
+        SQLEnum(MealType),
+        nullable=True
+    )
+
+
+    diet: Mapped["Diet"] = relationship(
+        back_populates="diet_recipes"
+    )
 
     recipe: Mapped["Recipe"] = relationship(
-        back_populates="favorites"
+        back_populates="diet_recipes"
     )
 
     def serialize(self):
-            return {
-                "id": self.id,
-                "user_id": self.user_id,
-                "recipe_id": self.recipe_id,
-                "created_at": self.created_at.isoformat()
-            }
+        return {
+            "id": self.id,
+            "diet_id": self.diet_id,
+            "recipe_id": self.recipe_id,
+            "day": self.day,
+            "meal_type": self.meal_type.value if self.meal_type else None,
+        }

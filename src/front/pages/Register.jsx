@@ -14,7 +14,6 @@ const Register = () => {
     name: "",
     age: "",
     weight: "",
-    objective: "",
   });
 
   const handleSubmit = async (e) => {
@@ -169,42 +168,6 @@ const Register = () => {
                         placeholder="70"
                         required
                       />
-                    </div>
-
-                    <div className="col-12">
-                      <label className="form-label fw-semibold">Objetivo</label>
-
-                      <select
-                        className="form-select form-select-lg"
-                        name="objective"
-                        value={formData.objective}
-                        onChange={handleChange}
-                        required
-                      >
-                        <option value="">Selecciona un objetivo</option>
-
-                        <option value="lose_weight">Perder peso</option>
-
-                        <option value="maintain_weight">Mantener peso</option>
-
-                        <option value="gain_muscle">Ganar masa muscular</option>
-
-                        <option value="body_recomposition">
-                          Recomposición corporal
-                        </option>
-
-                        <option value="sports_performance">
-                          Mejorar rendimiento deportivo
-                        </option>
-
-                        <option value="competition_prep">
-                          Preparación competición
-                        </option>
-
-                        <option value="healthy_eating">
-                          Alimentación saludable
-                        </option>
-                      </select>
                     </div>
 
                     <div className="col-12 mt-3">

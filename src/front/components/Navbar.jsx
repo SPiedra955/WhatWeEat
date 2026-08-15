@@ -12,7 +12,7 @@ export const Navbar = () => {
 
   return (
     <nav
-      className="navbar navbar-expand-lg fixed-top"
+      className="navbar navbar-expand-lg sticky-top"
       style={{
         background: "rgba(17, 24, 39, 0.85)",
         backdropFilter: "blur(12px)",
@@ -43,8 +43,8 @@ export const Navbar = () => {
             </li>
 
             <li className="nav-item mx-2">
-              <Link className="nav-link text-white" to="/products">
-                Productos
+              <Link className="nav-link text-white" to="/my-recipes">
+                Recetas
               </Link>
             </li>
 

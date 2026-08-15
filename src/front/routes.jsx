@@ -11,6 +11,9 @@ import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Recipe from "./pages/Recipe";
+import MyRecipes from "./pages/MyRecipes";
+
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,6 +32,8 @@ export const router = createBrowserRouter(
       <Route path="/demo" element={<Demo />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/recipe/:id" element={<Recipe />} />
+      <Route path="/my-recipes" element={<MyRecipes />}></Route>
     </Route>,
   ),
 );

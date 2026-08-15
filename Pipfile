@@ -19,9 +19,9 @@ flask-admin = "==2.0.0"
 typing-extensions = "*"
 wtforms = "==3.1.2"
 sqlalchemy = "*"
-werkzeug = "*"
-flask-jwt-extended = "*"
 openai = "*"
+flask-jwt-extended = "*"
+werkzeug = "*"
 
 [requires]
 python_version = "3.13"
