@@ -529,8 +529,7 @@ def get_favorites():
         return jsonify({
             "favorites": [
                 {
-                    "id": favorite.id,
-                    "recipe_id": favorite.recipe_id,
+                    **favorite.serialize(),
                     "recipe": favorite.recipe.serialize()
                 }
                 for favorite in favorites

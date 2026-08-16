@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Recipe from "./pages/Recipe";
 import MyRecipes from "./pages/MyRecipes";
+import Favorites from "./pages/Favorites";
 
 
 export const router = createBrowserRouter(
@@ -34,6 +35,7 @@ export const router = createBrowserRouter(
       <Route path="/register" element={<Register />} />
       <Route path="/recipe/:id" element={<Recipe />} />
       <Route path="/my-recipes" element={<MyRecipes />}></Route>
+      <Route path="/favorites" element={<Favorites />}></Route>
     </Route>,
   ),
 );

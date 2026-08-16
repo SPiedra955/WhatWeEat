@@ -49,8 +49,8 @@ export const Navbar = () => {
             </li>
 
             <li className="nav-item mx-2">
-              <Link className="nav-link text-white" to="/about">
-                Nosotros
+              <Link className="nav-link text-white" to="/favorites">
+                Favoritos
               </Link>
             </li>
 
