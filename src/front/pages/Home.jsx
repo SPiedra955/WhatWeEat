@@ -86,16 +86,12 @@ export const Home = () => {
             .split(",")
             .map((ingredient) => ingredient.trim())
             .filter(Boolean),
-
           servings: Number(servings),
-
-          objective: objective,
+          objective,
         }),
       });
 
       const data = await response.json();
-
-      console.log("RECIPE RESPONSE:", data);
 
       if (!response.ok) {
         throw new Error(
@@ -109,12 +105,12 @@ export const Home = () => {
       }
 
       throw new Error("La receta no tiene un ID válido.");
-
     } catch (error) {
       console.error("RECIPE ERROR:", error);
 
       setError(
-        error.message || "Ha ocurrido un error generando la receta."
+        error.message ||
+          "Ha ocurrido un error generando la receta."
       );
     } finally {
       setLoading(false);
@@ -122,363 +118,627 @@ export const Home = () => {
   };
 
   const loadExample = () => {
-    setIngredients("media bolsa de arroz, un filete de lomo, un tomate, media lechuga, aguacate, cebolla");
+    setIngredients(
+      "media bolsa de arroz, un filete de lomo, un tomate, media lechuga, aguacate, cebolla"
+    );
+
     setServings(1);
     setObjective("healthy_eating");
     setError("");
 
     document
       .getElementById("recipe-generator")
-      ?.scrollIntoView({ behavior: "smooth" });
+      ?.scrollIntoView({
+        behavior: "smooth",
+      });
   };
 
   const scrollToGenerator = () => {
     document
       .getElementById("recipe-generator")
-      ?.scrollIntoView({ behavior: "smooth" });
+      ?.scrollIntoView({
+        behavior: "smooth",
+      });
   };
 
   return (
-    <div className="bg-light min-vh-100 py-3">
+    <div className="home-page">
 
-      <section className="container py-3">
+      {/* ======================================================
+          HERO
+      ====================================================== */}
 
-        <div className="row align-items-center g-5">
+      <section className="home-hero">
 
-          {/* HERO */}
-          <div className="col-lg-6">
+        <div className="home-hero-decoration decoration-one" />
+        <div className="home-hero-decoration decoration-two" />
 
-            <div className="mb-4">
-              <span className="badge rounded-pill bg-success-subtle text-success px-3 py-2">
-                🤖 INTELIGENCIA ARTIFICIAL
-              </span>
-            </div>
+        <div className="container position-relative">
 
-            <h1 className="display-3 fw-bold lh-1 mb-4">
-              Lo que tienes.
-              <br />
+          <div className="row align-items-center g-5">
 
-              <span className="text-success">
-                Lo que puedes cocinar.
-              </span>
-            </h1>
+            {/* LEFT */}
 
-            <p className="lead text-secondary mb-4">
-              Introduce los ingredientes que tienes en casa y
-              personaliza tu receta según las personas y tu
-              objetivo nutricional.
-            </p>
+            <div className="col-lg-6">
 
-            <div className="d-flex flex-wrap gap-3 mb-5">
-
-              <button
-                className="btn btn-success btn-lg px-4 rounded-3"
-                onClick={scrollToGenerator}
-              >
-                ✨ Crear mi receta
-              </button>
-
-              <button
-                className="btn btn-outline-dark btn-lg px-4 rounded-3"
-                onClick={loadExample}
-              >
-                Ver ejemplo
-              </button>
-
-            </div>
-
-            {/* FEATURES */}
-            <div className="row g-3">
-
-              <div className="col-6">
-                <div className="card border-0 shadow-sm rounded-4 h-100">
-                  <div className="card-body p-4">
-                    <div className="fs-2 mb-3">🍳</div>
-
-                    <h6 className="fw-bold mb-2">
-                      Recetas IA
-                    </h6>
-
-                    <p className="small text-secondary mb-0">
-                      Recetas creadas según los ingredientes
-                      que tienes disponibles.
-                    </p>
-                  </div>
-                </div>
+              <div className="home-badge">
+                <span>✨</span>
+                Inteligencia artificial para tu cocina
               </div>
 
-              <div className="col-6">
-                <div className="card border-0 shadow-sm rounded-4 h-100">
-                  <div className="card-body p-4">
-                    <div className="fs-2 mb-3">🔥</div>
+              <h1 className="home-title">
+                Convierte tus ingredientes en
+                <span> recetas increíbles.</span>
+              </h1>
 
-                    <h6 className="fw-bold mb-2">
-                      Nutrición
-                    </h6>
+              <p className="home-description">
+                Dile a la IA qué tienes en la nevera y crea
+                recetas personalizadas según tus ingredientes,
+                tus raciones y tus objetivos.
+              </p>
 
-                    <p className="small text-secondary mb-0">
-                      Consulta calorías, proteínas,
-                      carbohidratos y grasas.
-                    </p>
-                  </div>
-                </div>
+              <div className="home-buttons">
+
+                <button
+                  className="home-primary-btn"
+                  onClick={scrollToGenerator}
+                >
+                  <span>✨</span>
+                  Crear mi receta
+                  <span className="arrow">→</span>
+                </button>
+
+                <button
+                  className="home-secondary-btn"
+                  onClick={loadExample}
+                >
+                  Ver cómo funciona
+                </button>
+
               </div>
 
-              <div className="col-6">
-                <div className="card border-0 shadow-sm rounded-4 h-100">
-                  <div className="card-body p-4">
-                    <div className="fs-2 mb-3">💪</div>
+              {/* TRUST */}
 
-                    <h6 className="fw-bold mb-2">
-                      Objetivos
-                    </h6>
+              <div className="home-trust">
 
-                    <p className="small text-secondary mb-0">
-                      Adapta cada receta a tu objetivo.
-                    </p>
-                  </div>
+                <div className="trust-avatars">
+                  <span>👩🏻</span>
+                  <span>👨🏼</span>
+                  <span>👩🏽</span>
+                  <span>👨🏻</span>
                 </div>
-              </div>
 
-              <div className="col-6">
-                <div className="card border-0 shadow-sm rounded-4 h-100">
-                  <div className="card-body p-4">
-                    <div className="fs-2 mb-3">❤️</div>
-
-                    <h6 className="fw-bold mb-2">
-                      Tus recetas
-                    </h6>
-
-                    <p className="small text-secondary mb-0">
-                      Guarda y consulta tus recetas favoritas.
-                    </p>
+                <div>
+                  <div className="trust-stars">
+                    ★★★★★
                   </div>
+
+                  <small>
+                    Cocina más fácil con IA
+                  </small>
                 </div>
+
               </div>
 
             </div>
-          </div>
 
-          {/* GENERATOR */}
-          <div
-            className="col-lg-6"
-            id="recipe-generator"
-          >
 
-            <div className="card border-0 shadow-lg rounded-4">
+            {/* RIGHT */}
 
-              <div className="card-body p-4 p-lg-5">
+            <div
+              className="col-lg-6"
+              id="recipe-generator"
+            >
 
-                <div className="d-flex align-items-center gap-3 mb-4">
+              <div className="generator-wrapper">
 
-                  <div
-                    className="rounded-4 bg-success-subtle d-flex align-items-center justify-content-center"
-                    style={{
-                      width: "56px",
-                      height: "56px",
-                      fontSize: "28px",
-                    }}
-                  >
-                    👨‍🍳
-                  </div>
+                <div className="generator-glow" />
 
-                  <div>
-                    <h4 className="fw-bold mb-1">
-                      Crea tu receta
-                    </h4>
+                <div className="generator-card">
 
-                    <small className="text-secondary">
-                      Generada en segundos con IA
-                    </small>
-                  </div>
+                  {/* HEADER */}
 
-                </div>
+                  <div className="generator-header">
 
-                {isAuthenticated ? (
-                  <>
-
-                    {/* INGREDIENTES */}
-                    <label className="form-label fw-semibold">
-                      ¿Qué ingredientes tienes?
-                    </label>
-
-                    <textarea
-                      className="form-control form-control-lg bg-light border-0 rounded-4"
-                      rows="5"
-                      placeholder="Ej: Media bolsa de arroz, un filete de lomo, un tomate, media lechuga, aguacate, cebolla"
-                      value={ingredients}
-                      onChange={(event) =>
-                        setIngredients(event.target.value)
-                      }
-                      disabled={loading}
-                    />
-
-                    <div className="d-flex justify-content-between mt-2">
-
-                      <small className="text-secondary">
-                        Separa los ingredientes con comas
-                      </small>
-
-                      <small className="text-success fw-semibold">
-                        ✨ AI Powered
-                      </small>
-
+                    <div className="generator-icon">
+                      👨‍🍳
                     </div>
 
-                    {/* OPCIONES */}
-                    <div className="row g-3 mt-2">
+                    <div>
 
-                      {/* RACIONES */}
-                      <div className="col-md-5">
-
-                        <label className="form-label fw-semibold">
-                          👥 ¿Para cuántas personas?
-                        </label>
-
-                        <select
-                          className="form-select form-select-lg bg-light border-0 rounded-4"
-                          value={servings}
-                          onChange={(event) =>
-                            setServings(Number(event.target.value))
-                          }
-                          disabled={loading}
-                        >
-                          {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12].map(
-                            (number) => (
-                              <option key={number} value={number}>
-                                {number}{" "}
-                                {number === 1
-                                  ? "persona"
-                                  : "personas"}
-                              </option>
-                            )
-                          )}
-                        </select>
-
+                      <div className="generator-title">
+                        Crea tu receta
                       </div>
 
-                      {/* OBJETIVO */}
-                      <div className="col-md-7">
-
-                        <label className="form-label fw-semibold">
-                          🎯 Objetivo
-                        </label>
-
-                        <select
-                          className="form-select form-select-lg bg-light border-0 rounded-4"
-                          value={objective}
-                          onChange={(event) =>
-                            setObjective(event.target.value)
-                          }
-                          disabled={loading}
-                        >
-                          {objectives.map((item) => (
-                            <option
-                              key={item.value}
-                              value={item.value}
-                            >
-                              {item.icon} {item.label}
-                            </option>
-                          ))}
-                        </select>
-
+                      <div className="generator-subtitle">
+                        Tu asistente de cocina con IA
                       </div>
 
                     </div>
 
-                    {/* BOTÓN */}
-                    <button
-                      className="btn btn-success btn-lg w-100 mt-4 rounded-4 py-3"
-                      onClick={generateRecipe}
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <>
-                          <span
-                            className="spinner-border spinner-border-sm me-2"
-                            role="status"
+                    <div className="ai-status">
+                      <span />
+                      IA activa
+                    </div>
+
+                  </div>
+
+
+                  {isAuthenticated ? (
+                    <>
+
+                      {/* INGREDIENTES */}
+
+                      <div className="generator-field">
+
+                        <label>
+                          🥕 ¿Qué tienes en casa?
+                        </label>
+
+                        <div className="ingredients-input">
+
+                          <textarea
+                            rows="4"
+                            placeholder="Ej: pollo, arroz, tomate, aguacate..."
+                            value={ingredients}
+                            onChange={(event) =>
+                              setIngredients(
+                                event.target.value
+                              )
+                            }
+                            disabled={loading}
                           />
 
-                          La IA está cocinando...
-                        </>
-                      ) : (
-                        <>
-                          ✨ Generar receta
-                        </>
-                      )}
-                    </button>
+                          <div className="input-bottom">
 
-                    {error && (
-                      <div className="alert alert-danger border-0 rounded-4 mt-4 mb-0">
+                            <small>
+                              Separa los ingredientes con comas
+                            </small>
 
-                        <div className="fw-semibold">
-                          ⚠️ Algo ha ocurrido
-                        </div>
+                            <span>
+                              ✨ IA
+                            </span>
 
-                        <div className="small mt-1">
-                          {error}
+                          </div>
+
                         </div>
 
                       </div>
-                    )}
 
-                  </>
-                ) : (
 
-                  <div className="text-center py-4">
+                      {/* OPCIONES */}
 
-                    <div
-                      className="mx-auto mb-4 rounded-circle bg-success-subtle d-flex align-items-center justify-content-center"
-                      style={{
-                        width: "80px",
-                        height: "80px",
-                        fontSize: "36px",
-                      }}
-                    >
-                      🔒
-                    </div>
+                      <div className="generator-options">
 
-                    <h4 className="fw-bold mb-3">
-                      Desbloquea la IA
-                    </h4>
+                        <div className="generator-field">
 
-                    <p className="text-secondary mb-4">
-                      Crea una cuenta gratuita para generar
-                      recetas personalizadas con Inteligencia
-                      Artificial.
-                    </p>
+                          <label>
+                            👥 Personas
+                          </label>
 
-                    <div className="d-flex flex-column gap-2">
+                          <select
+                            value={servings}
+                            onChange={(event) =>
+                              setServings(
+                                Number(event.target.value)
+                              )
+                            }
+                            disabled={loading}
+                          >
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12].map(
+                              (number) => (
+                                <option
+                                  key={number}
+                                  value={number}
+                                >
+                                  {number}{" "}
+                                  {number === 1
+                                    ? "persona"
+                                    : "personas"}
+                                </option>
+                              )
+                            )}
+                          </select>
+
+                        </div>
+
+
+                        <div className="generator-field">
+
+                          <label>
+                            🎯 Objetivo
+                          </label>
+
+                          <select
+                            value={objective}
+                            onChange={(event) =>
+                              setObjective(
+                                event.target.value
+                              )
+                            }
+                            disabled={loading}
+                          >
+                            {objectives.map((item) => (
+                              <option
+                                key={item.value}
+                                value={item.value}
+                              >
+                                {item.icon} {item.label}
+                              </option>
+                            ))}
+                          </select>
+
+                        </div>
+
+                      </div>
+
+
+                      {/* BUTTON */}
 
                       <button
-                        className="btn btn-success btn-lg rounded-4"
-                        onClick={() => navigate("/register")}
+                        className="generate-btn"
+                        onClick={generateRecipe}
+                        disabled={loading}
+                      >
+
+                        {loading ? (
+                          <>
+                            <span
+                              className="spinner-border spinner-border-sm"
+                              role="status"
+                            />
+
+                            La IA está cocinando...
+                          </>
+                        ) : (
+                          <>
+                            <span>✨</span>
+                            Generar mi receta
+                            <span className="generate-arrow">
+                              →
+                            </span>
+                          </>
+                        )}
+
+                      </button>
+
+
+                      {error && (
+                        <div className="generator-error">
+                          <strong>
+                            ⚠️ Algo ha ocurrido
+                          </strong>
+
+                          <span>
+                            {error}
+                          </span>
+                        </div>
+                      )}
+
+                    </>
+                  ) : (
+
+                    /* LOGIN */
+
+                    <div className="login-generator">
+
+                      <div className="login-icon">
+                        🔒
+                      </div>
+
+                      <h3>
+                        Desbloquea tu chef IA
+                      </h3>
+
+                      <p>
+                        Crea una cuenta gratuita y empieza
+                        a transformar tus ingredientes en
+                        recetas personalizadas.
+                      </p>
+
+                      <button
+                        className="generate-btn"
+                        onClick={() =>
+                          navigate("/register")
+                        }
                       >
                         ✨ Crear cuenta gratis
                       </button>
 
                       <button
-                        className="btn btn-outline-secondary btn-lg rounded-4"
-                        onClick={() => navigate("/login")}
+                        className="login-btn"
+                        onClick={() =>
+                          navigate("/login")
+                        }
                       >
                         Ya tengo una cuenta
                       </button>
 
-                    </div>
-
-                    <div className="mt-4">
-                      <small className="text-secondary">
-                        🔐 Tu cuenta protege tus recetas y preferencias.
+                      <small>
+                        🔐 Tus recetas se guardan de forma
+                        segura en tu cuenta.
                       </small>
+
                     </div>
 
-                  </div>
+                  )}
 
-                )}
+                </div>
 
               </div>
 
             </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* ======================================================
+          BENEFITS
+      ====================================================== */}
+
+      <section className="home-benefits">
+
+        <div className="container">
+
+          <div className="section-heading">
+
+            <span>
+              TODO EN UN SOLO LUGAR
+            </span>
+
+            <h2>
+              Tu cocina, ahora más inteligente.
+            </h2>
+
+            <p>
+              Desde encontrar qué cocinar hasta guardar
+              tus recetas favoritas.
+            </p>
+
+          </div>
+
+
+          <div className="row g-4">
+
+            <div className="col-md-6 col-lg-3">
+
+              <div className="benefit-card">
+
+                <div className="benefit-icon green">
+                  🤖
+                </div>
+
+                <h3>
+                  Recetas con IA
+                </h3>
+
+                <p>
+                  Introduce tus ingredientes y deja que
+                  nuestra IA haga el resto.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div className="col-md-6 col-lg-3">
+
+              <div className="benefit-card">
+
+                <div className="benefit-icon orange">
+                  🎯
+                </div>
+
+                <h3>
+                  A tu medida
+                </h3>
+
+                <p>
+                  Adapta cada receta a tus raciones y
+                  objetivos nutricionales.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div className="col-md-6 col-lg-3">
+
+              <div className="benefit-card">
+
+                <div className="benefit-icon red">
+                  ❤️
+                </div>
+
+                <h3>
+                  Tus favoritas
+                </h3>
+
+                <p>
+                  Guarda las recetas que más te gustan
+                  y encuéntralas cuando quieras.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div className="col-md-6 col-lg-3">
+
+              <div className="benefit-card">
+
+                <div className="benefit-icon blue">
+                  📄
+                </div>
+
+                <h3>
+                  Llévatelas contigo
+                </h3>
+
+                <p>
+                  Descarga tus recetas en PDF o
+                  compártelas fácilmente.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* ======================================================
+          HOW IT WORKS
+      ====================================================== */}
+
+      <section className="home-how">
+
+        <div className="container">
+
+          <div className="section-heading">
+
+            <span>
+              TAN FÁCIL COMO 1, 2, 3
+            </span>
+
+            <h2>
+              De la nevera al plato.
+            </h2>
+
+          </div>
+
+
+          <div className="row g-4">
+
+            <div className="col-md-4">
+
+              <div className="step-card">
+
+                <div className="step-number">
+                  01
+                </div>
+
+                <div className="step-icon">
+                  🥕
+                </div>
+
+                <h3>
+                  Dinos qué tienes
+                </h3>
+
+                <p>
+                  Escribe los ingredientes que tienes
+                  disponibles en casa.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div className="col-md-4">
+
+              <div className="step-card featured">
+
+                <div className="step-number">
+                  02
+                </div>
+
+                <div className="step-icon">
+                  🤖
+                </div>
+
+                <h3>
+                  La IA crea tu receta
+                </h3>
+
+                <p>
+                  Nuestra IA combina tus ingredientes
+                  y crea una receta personalizada.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div className="col-md-4">
+
+              <div className="step-card">
+
+                <div className="step-number">
+                  03
+                </div>
+
+                <div className="step-icon">
+                  🍽️
+                </div>
+
+                <h3>
+                  Cocina y disfruta
+                </h3>
+
+                <p>
+                  Sigue los pasos, consulta la nutrición
+                  y disfruta de tu creación.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      {/* ======================================================
+          FINAL CTA
+      ====================================================== */}
+
+      <section className="home-cta">
+
+        <div className="container">
+
+          <div className="home-cta-box">
+
+            <div className="cta-decoration">
+              ✨
+            </div>
+
+            <span>
+              TU PRÓXIMA RECETA ESTÁ A UN CLIC
+            </span>
+
+            <h2>
+              ¿Qué tienes hoy en la nevera?
+            </h2>
+
+            <p>
+              Deja que la IA convierta tus ingredientes
+              en algo delicioso.
+            </p>
+
+            <button
+              onClick={scrollToGenerator}
+              className="cta-button"
+            >
+              ✨ Crear mi receta
+              <span>→</span>
+            </button>
 
           </div>
 
