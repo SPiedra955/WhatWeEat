@@ -16,6 +16,7 @@ const Recipe = () => {
 
   const token = localStorage.getItem("token");
   const url = import.meta.env.VITE_BACKEND_URL;
+  
 
   useEffect(() => {
     const getRecipe = async () => {
@@ -716,7 +717,7 @@ const Recipe = () => {
             </button>
           </div>
         </div>
-        
+
       </div>
     </div>
   );

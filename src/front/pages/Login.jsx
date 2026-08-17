@@ -36,7 +36,7 @@ const Login = () => {
           icon: "error",
           title: "Credenciales incorrectas",
           text: "El correo o la contraseña no son válidos",
-          confirmButtonColor: "#dc3545",
+          confirmButtonColor: "#6366f1",
         });
       }
     }
@@ -52,85 +52,103 @@ const Login = () => {
   };
 
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light py-5 px-3">
-      <div className="w-100" style={{ maxWidth: "520px" }}>
-        <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
-          {/* Header */}
-          <div className="card-header bg-white border-0 py-4 px-4">
-            <div className="d-flex align-items-center">
-              <div
-                className="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3"
-                style={{ width: 55, height: 55 }}
-              >
-                <i className="bi bi-person-fill fs-4"></i>
-              </div>
+    <div className="login-page">
+      <div className="login-background-shape shape-1"></div>
+      <div className="login-background-shape shape-2"></div>
 
-              <div>
-                <h3 className="fw-bold mb-1">Iniciar sesión</h3>
-
-                <p className="text-muted mb-0">Accede con tus credenciales.</p>
-              </div>
+      <div className="container d-flex justify-content-center align-items-center min-vh-100 py-5">
+        <div className="login-wrapper">
+          {/* Logo / Brand */}
+          <div className="text-center mb-4">
+            <div className="login-logo">
+              <i className="bi bi-shield-lock-fill"></i>
             </div>
+
+            <h1 className="login-brand">Bienvenido</h1>
+
+            <p className="login-subtitle">Inicia sesión para continuar</p>
           </div>
 
-          {/* Form */}
-          <div className="card-body p-4 p-md-5">
+          {/* Card */}
+          <div className="login-card">
             <form onSubmit={handleSubmit}>
-              <div className="row g-4">
-                {/* Email */}
-                <div className="col-12">
-                  <label className="form-label fw-semibold">Email</label>
+              {/* Email */}
+              <div className="mb-4">
+                <label htmlFor="email" className="login-label">
+                  Correo electrónico
+                </label>
+
+                <div className="input-wrapper">
+                  <i className="bi bi-envelope input-icon"></i>
 
                   <input
+                    id="email"
                     type="email"
-                    className="form-control form-control-lg"
+                    className="login-input"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="ejemplo@email.com"
+                    placeholder="tu@email.com"
+                    autoComplete="email"
                     required
                   />
                 </div>
+              </div>
 
-                {/* Password */}
-                <div className="col-12">
-                  <label className="form-label fw-semibold">Contraseña</label>
+              {/* Password */}
+              <div className="mb-4">
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <label htmlFor="password" className="login-label mb-0">
+                    Contraseña
+                  </label>
+                </div>
+
+                <div className="input-wrapper">
+                  <i className="bi bi-lock input-icon"></i>
 
                   <input
+                    id="password"
                     type="password"
-                    className="form-control form-control-lg"
+                    className="login-input"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="********"
+                    placeholder="••••••••"
+                    autoComplete="current-password"
                     required
                   />
                 </div>
-
-                {/* Button */}
-                <div className="col-12 mt-3">
-                  <button
-                    type="submit"
-                    className="btn btn-primary btn-lg w-100 rounded-3"
-                  >
-                    Iniciar sesión
-                  </button>
-                </div>
               </div>
+
+              {/* Button */}
+              <button type="submit" className="login-button">
+                <span>Iniciar sesión</span>
+                <i className="bi bi-arrow-right"></i>
+              </button>
             </form>
+
+            {/* Divider */}
+            <div className="login-divider">
+              <span>o</span>
+            </div>
+
+            {/* Register */}
+            <div className="text-center">
+              <p className="register-text mb-0">
+                ¿Todavía no tienes una cuenta?
+              </p>
+
+              <Link to="/register" className="register-link">
+                Crear una cuenta
+                <i className="bi bi-arrow-up-right ms-1"></i>
+              </Link>
+            </div>
           </div>
-        </div>
 
-        {/* Register link */}
-        <div className="text-center mt-4">
-          <span className="text-muted">¿No tienes una cuenta?</span>
-
-          <Link
-            to="/register"
-            className="btn btn-link text-decoration-none fw-semibold"
-          >
-            Regístrate
-          </Link>
+          {/* Footer */}
+          <p className="login-footer">
+            © {new Date().getFullYear()} · Todos los derechos reservados
+          </p>
         </div>
       </div>
     </div>

@@ -15,7 +15,6 @@ import Recipe from "./pages/Recipe";
 import MyRecipes from "./pages/MyRecipes";
 import Favorites from "./pages/Favorites";
 
-
 export const router = createBrowserRouter(
   createRoutesFromElements(
     // CreateRoutesFromElements function allows you to build route elements declaratively.

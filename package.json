@@ -54,6 +54,7 @@
 		]
 	},
 	"dependencies": {
+		"bootstrap-icons": "^1.13.1",
 		"jspdf": "^4.2.1",
 		"openai": "^7.4.0",
 		"prop-types": "^15.8.1",

@@ -53,12 +53,6 @@ export const Navbar = () => {
                 Favoritos
               </Link>
             </li>
-
-            <li className="nav-item mx-2">
-              <Link className="nav-link text-white" to="/contact">
-                Contacto
-              </Link>
-            </li>
           </ul>
 
           <div className="d-flex gap-2 align-items-center">
