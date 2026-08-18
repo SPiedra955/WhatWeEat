@@ -481,7 +481,13 @@ def get_my_recipes():
 
         return jsonify({
             "recipes": [
-                recipe.serialize()
+                {
+                    **recipe.serialize(),
+                    "is_favorite": Favorite.query.filter_by(
+                        user_id=user_id,
+                        recipe_id=recipe.id
+                    ).first() is not None
+                }
                 for recipe in recipes
             ]
         }), 200
