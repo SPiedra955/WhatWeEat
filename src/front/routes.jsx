@@ -14,6 +14,7 @@ import Register from "./pages/Register";
 import Recipe from "./pages/Recipe";
 import MyRecipes from "./pages/MyRecipes";
 import Favorites from "./pages/Favorites";
+import Ai from "./pages/Ai";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -35,6 +36,7 @@ export const router = createBrowserRouter(
       <Route path="/recipe/:id" element={<Recipe />} />
       <Route path="/my-recipes" element={<MyRecipes />}></Route>
       <Route path="/favorites" element={<Favorites />}></Route>
+      <Route path="/ai" element={<Ai/>}></Route>
     </Route>,
   ),
 );

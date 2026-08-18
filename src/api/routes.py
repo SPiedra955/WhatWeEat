@@ -386,6 +386,8 @@ No incluyas dificultad ni ningún otro campo.
             carbs=nutrition.get("carbs"),
 
             fat=nutrition.get("fat"),
+            
+            objective=objective,
 
             ai_prompt=prompt,
         )
@@ -495,11 +497,11 @@ def get_my_recipes():
 @api.route("/recipes/<int:recipe_id>", methods=["GET"])
 @jwt_required()
 def get_recipe(recipe_id):
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
 
     recipe = Recipe.query.filter_by(
         id=recipe_id,
-        user_id=int(user_id)
+        user_id=user_id
     ).first()
 
     if not recipe:
@@ -507,8 +509,17 @@ def get_recipe(recipe_id):
             "error": "Recipe not found"
         }), 404
 
+    favorite = Favorite.query.filter_by(
+        user_id=user_id,
+        recipe_id=recipe_id
+    ).first()
+
+    recipe_data = recipe.serialize()
+
+    recipe_data["is_favorite"] = favorite is not None
+
     return jsonify({
-        "recipe": recipe.serialize()
+        "recipe": recipe_data
     }), 200
 
 # ============================================================
@@ -630,4 +641,320 @@ def remove_favorite(recipe_id):
 
         return jsonify({
             "error": "No se pudo eliminar la receta de favoritos"
+        }), 500
+
+        # --------------------------------
+        # Sugestions
+        # --------------------------------
+
+@api.route("/recipes/suggestions", methods=["POST"])
+@jwt_required()
+def recipe_suggestions():
+    try:
+
+        user_id = get_jwt_identity()
+
+        data = request.get_json()
+
+        if not data:
+            return jsonify({
+                "error": "Request body is required"
+            }), 400
+
+        ingredients = data.get("ingredients")
+        servings = data.get("servings", 1)
+        objective = data.get("objective", "healthy_eating")
+
+        # --------------------------------
+        # Validar ingredientes
+        # --------------------------------
+
+        if not ingredients:
+            return jsonify({
+                "error": "Ingredients are required"
+            }), 400
+
+        if not isinstance(ingredients, list):
+            return jsonify({
+                "error": "Ingredients must be an array"
+            }), 400
+
+        # Limpiar ingredientes
+        ingredients = [
+            str(ingredient).strip()
+            for ingredient in ingredients
+            if str(ingredient).strip()
+        ]
+
+        if not ingredients:
+            return jsonify({
+                "error": "At least one ingredient is required"
+            }), 400
+
+        # --------------------------------
+        # Validar servings
+        # --------------------------------
+
+        try:
+            servings = int(servings)
+        except (TypeError, ValueError):
+            return jsonify({
+                "error": "Servings must be a valid number"
+            }), 400
+
+        if servings < 1 or servings > 20:
+            return jsonify({
+                "error": "Servings must be between 1 and 20"
+            }), 400
+
+        ingredients_text = ", ".join(ingredients)
+
+        # --------------------------------
+        # Prompt
+        # --------------------------------
+
+        prompt = f"""
+Eres un chef experto y asesor nutricional.
+
+El usuario quiere preparar una receta utilizando los ingredientes
+que tiene actualmente disponibles.
+
+INGREDIENTES DISPONIBLES:
+{ingredients_text}
+
+NÚMERO DE PERSONAS:
+{servings}
+
+OBJETIVO:
+{objective}
+
+Tu tarea NO es crear todavía la receta.
+
+Tu tarea es analizar los ingredientes disponibles y proporcionar
+sugerencias que puedan mejorar la futura receta.
+
+Puedes sugerir:
+
+1. INGREDIENTES ADICIONALES
+Ingredientes que sería útil añadir para mejorar el sabor,
+textura, equilibrio nutricional o conseguir una mejor receta.
+
+2. SUSTITUCIONES
+Si algún ingrediente puede sustituirse por otro para adaptarse
+mejor al objetivo nutricional.
+
+3. ELIMINACIONES
+Si algún ingrediente puede ser innecesario o poco adecuado.
+
+4. MEJORAS
+Consejos sobre cómo combinar, cocinar o utilizar mejor los
+ingredientes disponibles.
+
+REGLAS:
+
+- No sugieras ingredientes absurdos o difíciles de conseguir.
+- Prioriza ingredientes comunes.
+- No sugieras demasiados ingredientes.
+- Máximo 5 sugerencias.
+- Las sugerencias deben tener sentido con los ingredientes existentes.
+- Ten en cuenta el objetivo nutricional.
+- No es obligatorio realizar sugerencias.
+- Si los ingredientes ya son adecuados, puedes indicarlo.
+- No generes todavía la receta completa.
+- No generes instrucciones completas de cocina.
+- No inventes ingredientes que el usuario ya tenga como si fueran
+  ingredientes adicionales.
+- Puedes asumir que el usuario dispone de básicos como aceite,
+  sal, pimienta, agua y especias.
+
+OBJETIVO NUTRICIONAL:
+
+Adapta tus sugerencias al objetivo:
+
+- lose_weight: prioriza alimentos saciantes y moderados en calorías.
+- maintain_weight: busca equilibrio nutricional.
+- gain_muscle: prioriza proteínas y energía suficiente.
+- body_recomposition: prioriza proteínas y equilibrio calórico.
+- sports_performance: prioriza energía, carbohidratos y proteínas.
+- competition_prep: prioriza una alimentación controlada orientada
+  al rendimiento.
+- healthy_eating: prioriza variedad y equilibrio nutricional.
+
+DEVUELVE EXCLUSIVAMENTE JSON VÁLIDO.
+
+Utiliza exactamente esta estructura:
+
+{{
+    "summary": "Breve valoración de los ingredientes disponibles",
+    "suggestions": [
+        {{
+            "type": "add",
+            "name": "pimiento",
+            "reason": "Aportará más verduras y combinará bien con el pollo y el arroz.",
+            "icon": "🫑"
+        }},
+        {{
+            "type": "replace",
+            "name": "arroz integral",
+            "replace": "arroz blanco",
+            "reason": "Puede aportar más fibra y encajar mejor con el objetivo.",
+            "icon": "🌾"
+        }},
+        {{
+            "type": "remove",
+            "name": "ingrediente",
+            "reason": "No es necesario para conseguir una buena receta.",
+            "icon": "➖"
+        }}
+    ]
+}}
+
+El campo "type" solamente puede ser:
+
+- "add"
+- "replace"
+- "remove"
+
+Para "add":
+
+"name" = ingrediente que recomienda añadir.
+
+Para "replace":
+
+"name" = ingrediente recomendado.
+"replace" = ingrediente actual que debería sustituirse.
+
+Para "remove":
+
+"name" = ingrediente que recomienda eliminar.
+
+No incluyas ningún otro campo.
+"""
+
+        # --------------------------------
+        # OpenAI
+        # --------------------------------
+
+        client = get_openai_client()
+
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "Eres un chef experto y asesor nutricional. "
+                        "Analiza ingredientes y proporciona sugerencias "
+                        "útiles. Devuelve exclusivamente JSON válido."
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": prompt,
+                },
+            ],
+            response_format={"type": "json_object"},
+        )
+
+        content = response.choices[0].message.content
+
+        if not content:
+            return jsonify({
+                "error": "OpenAI returned an empty response"
+            }), 500
+
+        # --------------------------------
+        # Parsear JSON
+        # --------------------------------
+
+        try:
+            ai_response = json.loads(content)
+        except json.JSONDecodeError:
+            return jsonify({
+                "error": "OpenAI returned invalid JSON"
+            }), 500
+
+        # --------------------------------
+        # Validar respuesta
+        # --------------------------------
+
+        summary = ai_response.get("summary", "")
+        suggestions = ai_response.get("suggestions", [])
+
+        if not isinstance(suggestions, list):
+            return jsonify({
+                "error": "Suggestions must be an array"
+            }), 500
+
+        # --------------------------------
+        # Limitar sugerencias
+        # --------------------------------
+
+        valid_types = {
+            "add",
+            "replace",
+            "remove",
+        }
+
+        clean_suggestions = []
+
+        for suggestion in suggestions:
+
+            if not isinstance(suggestion, dict):
+                continue
+
+            suggestion_type = suggestion.get("type")
+            name = suggestion.get("name")
+
+            if suggestion_type not in valid_types:
+                continue
+
+            if not name:
+                continue
+
+            clean_suggestion = {
+                "type": suggestion_type,
+                "name": str(name).strip(),
+                "reason": str(
+                    suggestion.get("reason", "")
+                ).strip(),
+                "icon": str(
+                    suggestion.get("icon", "✨")
+                ).strip(),
+            }
+
+            if suggestion_type == "replace":
+
+                replace = suggestion.get("replace")
+
+                if not replace:
+                    continue
+
+                clean_suggestion["replace"] = str(
+                    replace
+                ).strip()
+
+            clean_suggestions.append(
+                clean_suggestion
+            )
+
+        # Máximo 5
+        clean_suggestions = clean_suggestions[:5]
+
+        # --------------------------------
+        # Respuesta
+        # --------------------------------
+
+        return jsonify({
+            "summary": str(summary).strip(),
+            "suggestions": clean_suggestions,
+        }), 200
+
+    except Exception as error:
+
+        import traceback
+        traceback.print_exc()
+
+        return jsonify({
+            "error": str(error)
         }), 500
