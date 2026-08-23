@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export const Ai = () => {
   const navigate = useNavigate();
@@ -346,6 +347,28 @@ export const Ai = () => {
   };
 
   const ingredientList = getIngredientList();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      Swal.fire({
+        icon: "info",
+        title: "¡Inicia sesión!",
+        text: "Necesitas iniciar sesión para utilizar Chef IA.",
+        confirmButtonText: "Ir al login",
+        confirmButtonColor: "#62a45e",
+        background: "#ffffff",
+        color: "#172017",
+        customClass: {
+          popup: "rounded-4",
+          confirmButton: "rounded-pill px-4",
+        },
+      }).then(() => {
+        navigate("/login", { replace: true });
+      });
+    }
+  }, [navigate]);
 
   return (
     <div

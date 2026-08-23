@@ -113,20 +113,20 @@ const Favorites = () => {
 
   if (error) {
     return (
-      <div className="favorites-page">
+      <div className="recipes-page">
         <div className="container py-5">
-          <div className="favorites-error">
-            <div className="favorites-error-icon">⚠️</div>
-
-            <h3>Algo ha salido mal</h3>
-
-            <p>{error}</p>
+          <div className="error-card">
+            <div className="error-icon">🔐</div>
+            <h3>Inicia sesión para continuar</h3>
+            <p>Necesitas iniciar sesión para poder acceder a tus recetas.</p>
 
             <button
-              className="favorites-primary-btn"
-              onClick={() => window.location.reload()}
+              className="btn btn-success rounded-pill px-4"
+              onClick={() => {
+                window.location.href = "/login";
+              }}
             >
-              Intentar de nuevo
+              Iniciar sesión
             </button>
           </div>
         </div>
