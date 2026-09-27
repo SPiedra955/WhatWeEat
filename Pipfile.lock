@@ -591,12 +591,6 @@
         },
         "pydantic": {
             "hashes": [
-<<<<<<< HEAD
-                "sha256:41571c89ca91598c79e8ef18a2d07367d4810fbbd6f637794879baf1b7703423",
-                "sha256:66adcc2aff09b3f1bbd95fc1e1577df8ac8723c978552fd43304c8a290ac5728"
-            ],
-            "markers": "python_version >= '3.9'",
-=======
                 "sha256:45a282cde31d808236fd7ea9d919b128653c8b38b393d1c4ab335c62924d9aba",
                 "sha256:c40756b57adaa8b1efeeced5c196f3f3b7c435f90e84ea7f443901bec8099ef6"
             ],
@@ -735,7 +729,6 @@
                 "sha256:66adcc2aff09b3f1bbd95fc1e1577df8ac8723c978552fd43304c8a290ac5728"
             ],
             "markers": "python_version >= '3.9'",
->>>>>>> feature/mvp
             "version": "==2.13.0"
         },
         "python-dotenv": {
@@ -917,8 +910,6 @@
             "index": "pypi",
             "markers": "python_version >= '3.9'",
             "version": "==4.16.0"
-<<<<<<< HEAD
-=======
         },
         "typing-inspection": {
             "hashes": [
@@ -927,7 +918,6 @@
             ],
             "markers": "python_version >= '3.10'",
             "version": "==0.4.3"
->>>>>>> feature/mvp
         },
         "urllib3": {
             "hashes": [
